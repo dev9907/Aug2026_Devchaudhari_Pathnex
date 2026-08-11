@@ -2,6 +2,8 @@ Day 05 — Advanced CI/CD and Infrastructure Provisioning
 
 🔹 Jenkinsfile — With Git Integration and Testing
 
+
+```groovy
 pipeline{
      agent any
      stage {
