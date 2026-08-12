@@ -1,71 +1,104 @@
-Day 03 - Ansible, Terraform & Kubernetes Basics
-    Ansible - Install Apacke and Start Service
-- name: Install and start apache
-    hosts: all
-    become: yes 
-    tasks:
-      - name: Install apache
-        yum: 
-           name:httpd
-            state: started
-            enabled: yes
+Day 04 — Basic CI/CD Concepts with Jenkins & GitLab
 
 
+🔹 Jenkinsfile — Basic CI Pipeline
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building project'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Running tests'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying application'
+            }
+        }
+    }
+}
 
-   Terraform -EC2 Instance  (t3.medium)
-provider "aws" {
-   region = :us-east-1"
-   }
 
-resource "aws_instance" "PathnexEC2" {
-ami              = "ami-0abcdabcd1234"
-instacne_type    = t3.medium
-tags = {
-Name = "Pathnex-T3"
+🔹 GitLab CI/CD — Basic Pipeline
+stages:
+  - build
+  - test
+  - deploy
+
+build:
+  stage: build
+  script:
+    - echo "Building project"
+
+test:
+  stage: test
+  script:
+    - echo "Running tests"
+
+deploy:
+  stage: deploy
+  script:
+    - echo "Deploying application"
+
+
+🔹 Ansible — Install and Configure Nginx
+- name: Install and configure Nginx
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install nginx
+      yum:
+        name: nginx
+        state: present
+    - name: Configure nginx
+      template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+    - name: Start nginx service
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+
+🔹 Terraform — EC2 with Security Group
+resource "aws_security_group" "example" {
+  name        = "example_security_group"
+  description = "Allow SSH and HTTP"
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
-Kubernetes - Create a ReplicaSet with 3 Replicas
-apiVersion : apps/v1
-kind: Replicaset
-metadata:
-    name: pathnex-replicaset
-    spceL
-       replicas: 3
-       selector:
-        matchLables:
-           app: pathnex-app
-       template:
-       metadata:
-       labels:
-       app: pathnex-app
-  spce:
-      containers:
-      -name: app
-      image:nginx
-      port:
-      - containerPort : 80
 
+🔹 Docker
+# Apache Container
+FROM ubuntu:22.04
+RUN apt update && apt install apache2 -y
+RUN echo "Hello Pathnex" > /var/www/html/index.html
+CMD ["apachectl", "-D", "FOREGROUND"]
 
-
- Shell Script - User Info
- #!/bin/bash
- echo"current user: $(whoami)"
-echo "Current user groups: $(groups)"
-
-
-Docker 
-#Docker File for Nginx Web Server
-FROM nginx: latest
-COPY index.html /user/share/nginx/html/index.html
-
-#HTML
-<h1> Hello Pathnex</h1>
-
-# Bash
-# Real Path
-/usr/share/nginx/html
-
-#Bash
-docker build -t pathnex-nginx .
-docker run -d -p 80:80 pathnex-nginx
+# Bash Real Path
+/var/www/html
