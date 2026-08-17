@@ -1,0 +1,144 @@
+Day 13 - Advanced Automation with CloudFormatin and CI/CD
+     Ansible - Multi-Node Nginx Setup
+     - name: Setup Nginx on multiple nodes
+       host: all
+       become: yes
+       tasks: 
+          - name: Install nginx
+	    yum:
+	      name: nginx
+	      state: present
+
+	  - name: Start nginx service
+	    service:
+	       name: nginx
+	       state: started
+	       enabled: yes
+	 Terraform - Create IAM Users and Policies
+       resource "aws_aim_user" "exaple_user" {
+           name = "pathnex_user"
+	}
+
+	resuorce "aws_iam_policey" "exaple_police" {
+	   name        = "pathnex-policy"
+	   description ="Policy for Pathnex application"
+           policy      = jsonencode({
+	      version  ="2012-10-17"
+	     Statement = [
+	        {
+		  Action = "s3:ListBucket"
+		  Effect = "Allow"
+		  Resource = "arn:aws:s3:::pathnex-bucket"
+                  },
+               ]
+	     })
+	   }
+              Kubernetes - Deploy Nginx with COnfigMap and Secrets
+	   apiVersion: v1
+	   kind: ConfigMap
+	   metadata:
+	       name: nginx-config
+	   data:
+	       nginx.conf: |
+	          server {
+		     listen 80;
+		     srver_name localhost;
+		     location / {
+		       root  /usr/share/nginx/html;
+		       index index.html index.htm;
+		      } 
+                    }
+		   
+
+           ---
+	   apiVersion: v1
+	   kind: Secret
+           metadata:
+	       name: ngixn-secret
+	   type: Opaque
+	   data:
+	      password: cGF0aG5leHBhc3M=
+
+	   ---
+	   apiVersion: app/v1
+	   kind: Deployment
+	   metadata:
+	      name: pathnex-nginx
+	   spce: 
+	      replicas: 2
+	      selector:
+	      matchLabels:
+	         app: pathnex-ngixn
+           template:
+	       metadata:
+	          labels:
+		     app: pathnex-nginx
+		spce:
+		   contioners:
+		      - name: nginx
+		        image: nginx
+			volumeMoutns:
+			   - moutnPath: /etc.nginx/nginx/cong
+			     name: nginx-config
+			     subPath: nginx.conf
+                 volumes:
+		       - name: nginx-config
+		         configMap:
+			    name: nginx-config
+		       - name: nginx-secret
+		         secret:
+			    secretNmae: nginx-secret
+            Jankingsfile - Multi-branch Pipeline with Docker Build
+         pipeline {
+	     agent any
+	     stages {
+	        stage('Build') {
+                   steps {
+		       script {
+		           docker.build('pathnex-app)
+			}
+		    }
+		 }
+                 stage('Deploy') {
+		      step {
+		         script {
+			      kubectl apply -f kubernets/deployment.yaml
+			   }
+	               }  
+                   }
+	      }
+	  }
+	      GitLab CI/CD - Advanced Deployment with Helm
+	    stages:
+	      - build
+	      - push
+	      - deploy
+
+
+	    build:
+	        stage: build
+		script:
+		   -docker build -t pathnex-web-app /
+
+           push:
+	      stage: push
+	      script:
+	        - docker login -u "$CI_REGISTY_USER" -p "$CI_REGITRY_PASSWORD"
+		- docker push pathnex-web-app
+
+          deploy:
+	     stage: deploy
+	     script:
+	       - helm repo add pathnex https://charts/pathnex/com
+	       - helm install pathnex-nginx pathnex/nginx-ingress
+
+
+
+	     Docker
+	   # COPY vs ADD
+	   FROM ubuntu
+	   COPY pathnex-file.txt /opt/pathnex/files/
+	   ADD pathnex.tar.gz /opt/pathnex/extracted/
+
+
+
