@@ -1,0 +1,62 @@
+Day 19 - Advanced Monitoring,Logging, and Security
+     Ansible - Setup Prometheus for Monitoring
+- name: Install Prometheus for Monitoring
+  hosts: all
+  become: yes
+  tasks:
+     - name: Install Prometheus dependencies
+       yum:
+          name:
+	    - prometheus
+	    - prometheus-node-exporter
+	  state: present
+      - name: Start Prometheus service
+        service:
+	   name: prometheus
+	   state: started
+	   enabled:yes
+      Terraform - Setup AWS CloudWatch for Monitoring
+  resource "aws_cloudwatch_log_group" "pathnex_log_group" {
+      name = "pathnex-log-stream"
+    }
+       Kubernetes - Deploy Fluented for Loggin
+    apiVersion: app/v1
+    king: Deployment
+    metadata:
+       name: fluentd
+    spec:
+      replicas: 1
+      selector:
+        matchLablels:
+	  app: fluentd
+	spec:
+	  replicas: 1
+	  selector:
+	    match Labels:
+	      spp: fluentd
+	  template:
+	    metadata:
+	      labels:
+	        app: fluentd
+            spec:
+	      containers: 24224
+   ---
+   apiVersion: v1
+   kind: Service
+   matadata:
+      name: fluentd
+   spec: 
+       selector:
+          app: fluentd
+       ports:
+          - protocal: TCP
+	    port: 24224
+	Jenkinsfile - Intergrating Prometheus Monitoring in Pipeline
+     pipeline {
+         agent any
+	    stages {
+	        stage('BUild') {
+		    steps {
+		        echo 'Building Docker image...'
+			docker.build('pathnex-web-app')
+
