@@ -1,0 +1,109 @@
+Day 19 - Advanced Monitoring,Logging, and Security
+     Ansible - Setup Prometheus for Monitoring
+- name: Install Prometheus for Monitoring
+  hosts: all
+  become: yes
+  tasks:
+     - name: Install Prometheus dependencies
+       yum:
+          name:
+	    - prometheus
+	    - prometheus-node-exporter
+	  state: present
+      - name: Start Prometheus service
+        service:
+	   name: prometheus
+	   state: started
+	   enabled:yes
+      Terraform - Setup AWS CloudWatch for Monitoring
+  resource "aws_cloudwatch_log_group" "pathnex_log_group" {
+      name = "pathnex-log-stream"
+    }
+       Kubernetes - Deploy Fluented for Loggin
+    apiVersion: app/v1
+    king: Deployment
+    metadata:
+       name: fluentd
+    spec:
+      replicas: 1
+      selector:
+        matchLablels:
+	  app: fluentd
+	spec:
+	  replicas: 1
+	  selector:
+	    match Labels:
+	      spp: fluentd
+	  template:
+	    metadata:
+	      labels:
+	        app: fluentd
+            spec:
+	      containers: 24224
+   ---
+   apiVersion: v1
+   kind: Service
+   matadata:
+      name: fluentd
+   spec: 
+       selector:
+          app: fluentd
+       ports:
+          - protocal: TCP
+	    port: 24224
+	Jenkinsfile - Intergrating Prometheus Monitoring in Pipeline
+     pipeline {
+         agent any
+	    stages {
+	        stage('BUild') {
+		    steps {
+		        echo 'Building Docker image...'
+			docker.build('pathnex-web-app')
+
+                    }
+		 }
+		 stage('Monitor Deployment') {
+		     steps {
+		         script {
+			    sh 'kubectl apply -f kubernetes/deployment.yaml'
+			    sh 'kubectl get pods --watch'
+                         }
+	             }
+		 }
+            }
+ 	}       
+           GitLab CI/CD - Prometheus and loggin Integration
+	stages:
+	  - build
+	  - push
+	  - deploy
+
+	push:
+	   stage: push
+	   script:
+	      - docker login -u "CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
+	      - docker push pathnex-web-app
+
+	deploy
+	    stage: deploy
+	    scritp:
+	        - kubectl apply -f kubernets.deployment.yaml
+		- kubectl get pods --watch
+
+
+          Docker 
+	  #Flask Application (Python)
+	  from flask import Flask
+	  app = Flask(_name_)
+	  @aap.route(./.)
+	  def home():
+	       return "Hello Pathnex"
+	  app.run(host="0.0.0.0', port=5000)
+
+	    Docker File
+	  FROM pthon:3.11
+	  WORKDIR / opt/pathnex/flask-app
+	  COPY . / opt/pathnex/flask-app/
+          RUN pip install flask
+	  CMD ["pythan","opt/pathnex/flask-app/app.py"]
+	
