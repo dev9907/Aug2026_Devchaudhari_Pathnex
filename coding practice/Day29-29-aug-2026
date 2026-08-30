@@ -86,9 +86,3 @@
             container_name: pathenx-mysql
             environment:
               MYSQL_ROOT_PASSWORD: root
-              
-
-
-
-
-
